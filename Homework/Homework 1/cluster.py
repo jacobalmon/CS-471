@@ -14,10 +14,17 @@ def isCluster(circles):
   # Get number of circles for later use.
   num_circles = len(circles)
 
+  # Edge Cases
+  if num_circles == 0: # No Circles.
+    return False
+  elif num_circles == 1: # Only 1 Circle.
+    return True
+
   # Creating Adjacency List (Graph) -> (dictionary of lists)
   adj_list = {}
   for i in range(num_circles):
     adj_list[i] = [] # initially empty.
+
 
   # Adds Overlaps into Adjacency List.
   for i in range(num_circles):
@@ -59,8 +66,9 @@ if __name__ == "__main__":
   # Test Case 3.
   c_tuples3 = [(0.5, 0.5, 0.5), (1.5, 1.5, 1.1), (0.7, 0.7, 0.4), (4, 4, 0.7)]
   # Test Case 4.
-  c_tuples4 = [()]
+  c_tuples5 = [(0.5, 0.5, 1), (1, 2.4, 1), (1.8, 1.6, 0.5)]
 
   print(isCluster(c_tuples1))
   print(isCluster(c_tuples2))
   print(isCluster(c_tuples3))
+  print(isCluster(c_tuples4))
