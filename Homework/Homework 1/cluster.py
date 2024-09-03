@@ -35,7 +35,7 @@ def isCluster(circles):
       distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
       # if the distance of said circles are less than or equal to the
       # sum of the radii, then there is a cluster of those two circles.
-      if distance <= r1 + r2:
+      if r1 + r2 >= distance >= abs(r1 - r2):
         adj_list[i].append(j)
         adj_list[j].append(i)
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
   # Test Case 3.
   c_tuples3 = [(0.5, 0.5, 0.5), (1.5, 1.5, 1.1), (0.7, 0.7, 0.4), (4, 4, 0.7)]
   # Test Case 4.
-  c_tuples4 = [(0.5, 0.5, 1), (1, 2.4, 1), (1.8, 1.6, 0.5)]
+  c_tuples4 = [(0.5, 0.5, 0.5), (0.5, 0.5, 0.8)]
 
   print(isCluster(c_tuples1))
   print(isCluster(c_tuples2))
