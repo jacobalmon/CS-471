@@ -32,36 +32,38 @@ def prior_probability(train_data):
 
     return prob_spam, prob_ham
 
-def cond_probability(train_data):
+def probability_words(train_data):
+    # Creating Dicts for keeping track of spam and ham freqeuncies.
     spam_word_count =  defaultdict(int)
     ham_word_count = defaultdict(int)
     total_spam_words, total_ham_words = 0, 0
 
+    # Calculating Frequencies of Words.
     for sentence in train_data:
         label, text = sentence
         words = text.split()
 
-        if label == 'spam':
+        if label == 'spam': # Update words in dict if spam.
             for word in words:
                 spam_word_count[word] += 1
                 total_spam_words += 1
         
-        elif label == 'ham':
+        elif label == 'ham': # Update words in dict if ham.
             for word in words:
                 ham_word_count[word] += 1
                 total_ham_words += 1
 
-    cp_spam = {}
+    pw_spam = {} # Dict to Store Probability on Each Word (Spam).
     for word, freq in spam_word_count.items():
         prob = freq / total_spam_words
-        cp_spam[word] = prob
+        pw_spam[word] = prob
 
-    cp_ham = {}
+    pw_ham = {} # Dict to Store Probability on Each Word (Ham).
     for word, freq in ham_word_count.items():
         prob = freq / total_ham_words
-        cp_ham[word] = prob
+        pw_ham[word] = prob
 
-    return cp_spam, cp_ham
+    return pw_spam, pw_ham
 
 def print_dict(prob_dict, label):
     print(f'Conditional Probabilities for {label}:')
@@ -70,11 +72,15 @@ def print_dict(prob_dict, label):
     print('')
 
 if __name__ == "__main__":
-    train_data, test_data = split_data('SpamDetection.csv') # Task 1.
-    pp_spam, pp_ham = prior_probability(train_data) # Task 2.
-    cp_spam, cp_ham = cond_probability(train_data) # Task 3.
+    # Task 1.
+    train_data, test_data = split_data('SpamDetection.csv') 
+    # Task 2.
+    pp_spam, pp_ham = prior_probability(train_data) 
+    # Task 3.
+    pw_spam, pw_ham = probability_words(train_data) 
     
+    # Testing.
     print(f'Prior Probability of Spam: {pp_spam}\n')
     print(f'Prior Probability of Ham: {pp_ham}\n')
-    print_dict(cp_spam, 'Spam')
-    print_dict(cp_ham, 'Ham')
+    print_dict(pw_spam, 'Spam')
+    print_dict(pw_ham, 'Ham')
