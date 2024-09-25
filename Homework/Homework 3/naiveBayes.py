@@ -62,20 +62,24 @@ def probability_words(train_data):
         prob = freq / total_ham_words
         pw_ham[word] = prob
 
-    return pw_spam, pw_ham, total_spam_words, total_ham_words
+    return pw_spam, pw_ham
 
 def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoothing=1):
     words = sentence.split()
 
+    # Temporary Probability for the Sentence.
     p_spam = pp_spam
     p_ham = pp_ham
 
-    for word in words:
+    for word in words: #
         p_spam *= (pw_spam.get(word, 0) + smoothing) / (sum(pw_spam.values()) + num_words * smoothing)
         p_ham *= (pw_ham.get(word, 0) + smoothing) / (sum(pw_ham.values()) + num_words * smoothing)
 
+    # Combine Both Probabilities.
     combined_prob = p_spam + p_ham
+    # Find Probability of a Sentence Given it's Spam.
     pg_spam = p_spam / combined_prob
+    # Find Probability of a Sentence Given it's Ham. (Complement)
     pg_ham = 1 - pg_spam
 
     return pg_spam, pg_ham
@@ -86,18 +90,33 @@ def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoo
 #         print(f'{word}: {prob}')
 #     print('')
 
+def find_num_words(train_data):
+    unique_words = set()
+
+    for _, text in train_data:
+        words = text.split()
+        for word in words:
+            unique_words.add(word)
+
+    return len(unique_words)
+
 if __name__ == "__main__":
     # Task 1.
     train_data, test_data = split_data('SpamDetection.csv') 
+
     # Task 2.
     pp_spam, pp_ham = prior_probability(train_data) 
-    # Task 3.
-    pw_spam, pw_ham, total_spam_words, total_ham_words = probability_words(train_data) 
-    vocab_size = len(set(word for _, text in train_data for word in text.split()))
-    pg_spam, pg_ham = cond_probability(train_data[0][1], pw_spam, pw_ham, pp_spam, pp_ham, vocab_size)
-    
-    # Testing.
+
+    # Testing Task 1 & 2.
     print(f'Prior Probability of Spam: {pp_spam}\n')
     print(f'Prior Probability of Ham: {pp_ham}\n')
-    print(f'Conditional Probability of Sentence Given it\'s spam: {pg_spam}\n')
-    print(f'Conditional Probability of Sentence Given it\'s ham: {pg_ham}\n')
+
+    # Task 3.
+    pw_spam, pw_ham = probability_words(train_data) 
+    num_words = find_num_words(train_data)
+
+    # Testing Task 3.
+    for i in range(len(train_data)):
+        pg_spam, pg_ham = cond_probability(train_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, num_words)
+        print(f'Sentence: {train_data[i][1]}')
+        print(f'Conditional Probability of Sentence Given it\'s spam: {pg_spam}\nConditional Probability of Sentence Given it\'s ham: {pg_ham}\n')
