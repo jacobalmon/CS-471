@@ -1,6 +1,5 @@
 import csv
 from collections import defaultdict
-import pprint
 
 def split_data(file):
     # Loading the Dataset.
@@ -63,13 +62,29 @@ def probability_words(train_data):
         prob = freq / total_ham_words
         pw_ham[word] = prob
 
-    return pw_spam, pw_ham
+    return pw_spam, pw_ham, total_spam_words, total_ham_words
 
-def print_dict(prob_dict, label):
-    print(f'Conditional Probabilities for {label}:')
-    for word, prob in prob_dict.items():
-        print(f'{word}: {prob}')
-    print('')
+def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoothing=1):
+    words = sentence.split()
+
+    p_spam = pp_spam
+    p_ham = pp_ham
+
+    for word in words:
+        p_spam *= (pw_spam.get(word, 0) + smoothing) / (sum(pw_spam.values()) + num_words * smoothing)
+        p_ham *= (pw_ham.get(word, 0) + smoothing) / (sum(pw_ham.values()) + num_words * smoothing)
+
+    combined_prob = p_spam + p_ham
+    pg_spam = p_spam / combined_prob
+    pg_ham = 1 - pg_spam
+
+    return pg_spam, pg_ham
+
+# def print_dict(prob_dict, label):
+#     print(f'Conditional Probabilities for {label}:')
+#     for word, prob in prob_dict.items():
+#         print(f'{word}: {prob}')
+#     print('')
 
 if __name__ == "__main__":
     # Task 1.
@@ -77,10 +92,12 @@ if __name__ == "__main__":
     # Task 2.
     pp_spam, pp_ham = prior_probability(train_data) 
     # Task 3.
-    pw_spam, pw_ham = probability_words(train_data) 
+    pw_spam, pw_ham, total_spam_words, total_ham_words = probability_words(train_data) 
+    vocab_size = len(set(word for _, text in train_data for word in text.split()))
+    pg_spam, pg_ham = cond_probability(train_data[0][1], pw_spam, pw_ham, pp_spam, pp_ham, vocab_size)
     
     # Testing.
     print(f'Prior Probability of Spam: {pp_spam}\n')
     print(f'Prior Probability of Ham: {pp_ham}\n')
-    print_dict(pw_spam, 'Spam')
-    print_dict(pw_ham, 'Ham')
+    print(f'Conditional Probability of Sentence Given it\'s spam: {pg_spam}\n')
+    print(f'Conditional Probability of Sentence Given it\'s ham: {pg_ham}\n')
