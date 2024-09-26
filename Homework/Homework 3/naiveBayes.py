@@ -51,7 +51,7 @@ def probability_words(train_data):
             for word in words:
                 ham_word_count[word] += 1
                 total_ham_words += 1
-
+                
     pw_spam = {} # Dict to Store Probability on Each Word (Spam).
     for word, freq in spam_word_count.items():
         prob = freq / total_spam_words
@@ -84,12 +84,6 @@ def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoo
 
     return pg_spam, pg_ham
 
-# def print_dict(prob_dict, label):
-#     print(f'Conditional Probabilities for {label}:')
-#     for word, prob in prob_dict.items():
-#         print(f'{word}: {prob}')
-#     print('')
-
 def find_num_words(train_data):
     unique_words = set()
 
@@ -100,23 +94,66 @@ def find_num_words(train_data):
 
     return len(unique_words)
 
+def test_prediction(responses, test_data, num_sentence):
+    correct = 0
+    for i in range(num_sentence):
+        if responses[i] == test_data[i][0]:
+            correct += 1
+    
+    return correct / num_sentence
+
 if __name__ == "__main__":
     # Task 1.
     train_data, test_data = split_data('SpamDetection.csv') 
 
     # Task 2.
     pp_spam, pp_ham = prior_probability(train_data) 
-
-    # Testing Task 1 & 2.
     print(f'Prior Probability of Spam: {pp_spam}\n')
     print(f'Prior Probability of Ham: {pp_ham}\n')
 
     # Task 3.
     pw_spam, pw_ham = probability_words(train_data) 
     num_words = find_num_words(train_data)
-
-    # Testing Task 3.
     for i in range(len(train_data)):
         pg_spam, pg_ham = cond_probability(train_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, num_words)
         print(f'Sentence: {train_data[i][1]}')
         print(f'Conditional Probability of Sentence Given it\'s spam: {pg_spam}\nConditional Probability of Sentence Given it\'s ham: {pg_ham}\n')
+
+    # Task 4.
+    for i in range(len(train_data)):
+        pg_spam, pg_ham = cond_probability(train_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, num_words)
+        pgs_sentence = pp_spam * pg_spam
+        # posterior_spam = pp_spam * pg_spam
+        # posterior_ham = pp_ham * pg_ham
+        pgh_sentence = pp_ham * pg_ham
+        print(f'Sentence: {train_data[i][1]}')
+        print(f'Posterior Probability of Spam Given a Sentence: {pgs_sentence}')
+        # print(f'Posterior Probability of Spam: {posterior_spam}')
+        # print(f'Posterior Probability of Ham: {posterior_ham}')
+        print(f'Posterior Probability of Ham Given a Sentence: {pgh_sentence}\n')
+
+    # Task 5.
+    test_num_words = find_num_words(test_data)
+    num_sentence = len(test_data)
+    responses = []
+    for i in range(num_sentence):
+        pg_spam, pg_ham = cond_probability(test_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, test_num_words)
+        pgs_sentence = pp_spam * pg_spam
+        pgh_sentence = pp_ham * pg_ham
+
+
+        if pgs_sentence > pgh_sentence:
+            classType = 'spam'
+            prob = pgs_sentence 
+        else:
+            classType = 'ham'
+            prob = pgh_sentence
+        responses.append(classType)
+
+        print(f'Sentence: {test_data[i][1]}')
+        print(f'Posterior Probability of Sentence being Spam: {pgs_sentence} {pgh_sentence}')
+        print(f'The Sentence is {classType}\n')
+        
+    # Task 6.
+    accuracy = test_prediction(responses, test_data, num_sentence)
+    print(f'Accuracy: {accuracy}')
