@@ -152,6 +152,7 @@ if __name__ == "__main__":
 
         print(f'Sentence: {test_data[i][1]}')
         print(f'Posterior Probability of Sentence being Spam: {pgs_sentence}')
+        print(f'Posterior Probability of Sentence being Ham: {pgh_sentence}')
         print(f'The Sentence is {classType}\n')
         
     # Task 6.
