@@ -65,13 +65,14 @@ def probability_words(train_data):
     return pw_spam, pw_ham
 
 def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoothing=1):
+    # Break Sentence into Words.
     words = sentence.split()
 
     # Temporary Probability for the Sentence.
     p_spam = pp_spam
     p_ham = pp_ham
 
-    for word in words: #
+    for word in words: # Calculating the Probability by Multiplying by Prior Probabibilties and Word Probabilities.
         p_spam *= (pw_spam.get(word, 0) + smoothing) / (sum(pw_spam.values()) + num_words * smoothing)
         p_ham *= (pw_ham.get(word, 0) + smoothing) / (sum(pw_ham.values()) + num_words * smoothing)
 
@@ -84,20 +85,22 @@ def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, smoo
 
     return pg_spam, pg_ham
 
-def find_num_words(train_data):
+def find_num_words(data):
     unique_words = set()
 
-    for _, text in train_data:
+    for _, text in data:
         words = text.split()
         for word in words:
             unique_words.add(word)
 
     return len(unique_words)
 
-def test_prediction(responses, test_data, num_sentence):
+def test_prediction(responses, data, num_sentence):
     correct = 0
+    # Finding the Accuracy Given Either training data or testing data.
     for i in range(num_sentence):
-        if responses[i] == test_data[i][0]:
+        # Update correctness if the data and the response matches.
+        if responses[i] == data[i][0]:
             correct += 1
     
     return correct / num_sentence
