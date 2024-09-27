@@ -120,23 +120,32 @@ if __name__ == "__main__":
         print(f'Conditional Probability of Sentence Given it\'s spam: {pg_spam}\nConditional Probability of Sentence Given it\'s ham: {pg_ham}\n')
 
     # Task 4.
+    responses_train = []
+    num_sentence_train = len(train_data)
     for i in range(len(train_data)):
         pg_spam, pg_ham = cond_probability(train_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, num_words)
         pgs_sentence = pp_spam * pg_spam
-        # posterior_spam = pp_spam * pg_spam
-        # posterior_ham = pp_ham * pg_ham
+        posterior_spam = pp_spam * pg_spam
+        posterior_ham = pp_ham * pg_ham
         pgh_sentence = pp_ham * pg_ham
+
+        if pgs_sentence > pgh_sentence:
+            classType = 'spam'
+        else:
+            classType = 'ham'
+        responses_train.append(classType)
+
         print(f'Sentence: {train_data[i][1]}')
         print(f'Posterior Probability of Spam Given a Sentence: {pgs_sentence}')
-        # print(f'Posterior Probability of Spam: {posterior_spam}')
-        # print(f'Posterior Probability of Ham: {posterior_ham}')
+        print(f'Posterior Probability of Spam: {posterior_spam}')
+        print(f'Posterior Probability of Ham: {posterior_ham}')
         print(f'Posterior Probability of Ham Given a Sentence: {pgh_sentence}\n')
 
     # Task 5.
     test_num_words = find_num_words(test_data)
-    num_sentence = len(test_data)
-    responses = []
-    for i in range(num_sentence):
+    num_sentence_test = len(test_data)
+    responses_test = []
+    for i in range(num_sentence_test):
         pg_spam, pg_ham = cond_probability(test_data[i][1], pw_spam, pw_ham, pp_spam, pp_ham, test_num_words)
         pgs_sentence = pp_spam * pg_spam
         pgh_sentence = pp_ham * pg_ham
@@ -148,7 +157,7 @@ if __name__ == "__main__":
         else:
             classType = 'ham'
             prob = pgh_sentence
-        responses.append(classType)
+        responses_test.append(classType)
 
         print(f'Sentence: {test_data[i][1]}')
         print(f'Posterior Probability of Sentence being Spam: {pgs_sentence}')
@@ -156,5 +165,7 @@ if __name__ == "__main__":
         print(f'The Sentence is {classType}\n')
         
     # Task 6.
-    accuracy = test_prediction(responses, test_data, num_sentence)
-    print(f'Accuracy: {accuracy}')
+    accuracy_train = test_prediction(responses_train, train_data, num_sentence_train)
+    accuracy_test = test_prediction(responses_test, test_data, num_sentence_test)
+    print(f'Training Accuracy: {accuracy_train}')
+    print(f'Testing Accuracy: {accuracy_test}')
