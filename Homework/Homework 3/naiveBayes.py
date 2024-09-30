@@ -52,16 +52,6 @@ def probability_words(train_data):
                 ham_word_count[word] += 1
                 total_ham_words += 1
 
-    # pw_spam = {} # Dict to Store Probability on Each Word (Spam).
-    # for word, freq in spam_word_count.items():
-    #     prob = freq / total_spam_words
-    #     pw_spam[word] = prob
-
-    # pw_ham = {} # Dict to Store Probability on Each Word (Ham).
-    # for word, freq in ham_word_count.items():
-    #     prob = freq / total_ham_words
-    #     pw_ham[word] = prob
-
     return spam_word_count, ham_word_count, total_spam_words, total_ham_words
 
 def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, total_spam_words, total_ham_words, smoothing=1):
@@ -79,12 +69,16 @@ def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, tota
     return p_spam, p_ham
 
 def find_num_words(data):
+    # Using Hashset since it can't have duplicates.
     unique_words = set()
 
+    # Go though data set.
     for _, text in data:
         words = text.split()
+        # Update Set if a new Entry is Found.
         for word in words:
             unique_words.add(word)
+
     return len(unique_words)
 
 def test_prediction(responses, data, num_sentence):
