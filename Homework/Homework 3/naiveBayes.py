@@ -63,8 +63,8 @@ def cond_probability(sentence, pw_spam, pw_ham, pp_spam, pp_ham, num_words, tota
     p_ham = 1
 
     for word in words: # Calculating the Probability by Multiplying by Prior Probabibilties and Word Probabilities.
-        p_spam *= (pw_spam.get(word, 0) + smoothing) / (total_spam_words + num_words * smoothing)
-        p_ham *= (pw_ham.get(word, 0) + smoothing) / (total_ham_words + num_words * smoothing)
+        p_spam *= (pw_spam.get(word, 0) + smoothing) / (total_spam_words + num_words)
+        p_ham *= (pw_ham.get(word, 0) + smoothing) / (total_ham_words + num_words)
 
     return p_spam, p_ham
 
