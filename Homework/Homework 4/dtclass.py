@@ -1,4 +1,4 @@
-from scikit-learn import *
+from sklearn import *
 
 if __name__ == '__main__':
     pass
